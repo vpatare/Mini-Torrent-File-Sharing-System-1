@@ -28,23 +28,35 @@ void client(int newSocket, struct sockaddr_in newAddr)
     while(1) {
         bzero(buffer, 1024);
         //printf("%s\n", buffer);
-        recv(newSocket, buffer, 1024, 0);
-        if (strcmp(buffer, "exit") == 0) {
+        recv(newSocket, buffer, 1, 0);
+
+        //exit
+        /*if (strcmp(buffer, "0") == 0) {
+            recv(newSocket, buffer, 1024, 0);
             printf("Disconnected from %s:%d\n", inet_ntoa(newAddr.sin_addr), ntohs(newAddr.sin_port));
+            //terminate();
             break;
-        } else {                       //controls share only
-            //printf("%s\n", buffer);
-            seeder_file = fopen("seeders.txt", "ab");
-            string client_address = inet_ntoa(newAddr.sin_addr);   //getting clients address and port
-            int cli_port = ntohs(newAddr.sin_port);
-            string client_port = to_string(cli_port);
-            string client_ip_port = client_address + ":" + client_port;
-            fwrite(buffer,1, strlen(buffer), seeder_file);
-            fclose(seeder_file);
-            fwrite("\n", 1, 1, seeder_file);
+        }*/
+
+
+        //share
+        if(strcmp(buffer, "1") == 0){                       //controls share only
+            recv(newSocket, buffer, 1024, 0);
+
             string temp(buffer);
             istringstream iss(temp);
             vector<string> result((istream_iterator<string>(iss)), istream_iterator<string>());
+
+            //printf("%s\n", buffer);
+            seeder_file = fopen("seeders.txt", "ab");
+            //string client_address = inet_ntoa(newAddr.sin_addr);   //getting clients address and port
+            //int cli_port = ntohs(newAddr.sin_port);
+            //string client_port = to_string(cli_port);
+            string client_ip_port = result[2];
+            fwrite(buffer,1, strlen(buffer), seeder_file);
+            fclose(seeder_file);
+            fwrite("\n", 1, 1, seeder_file);
+
             if (seeder_list.find(result[1]) == seeder_list.end()) {
                 //printf("not found\n");
                 vector<pair<string, string> > second;
@@ -64,9 +76,29 @@ void client(int newSocket, struct sockaddr_in newAddr)
 
             }
         }
+
+        else if(strcmp(buffer, "2") == 0) {
+            recv(newSocket, buffer, 1024, 0);
+            //printf("%s\n", buffer);
+            string hash(buffer);
+            vector<pair<string, string> > found_hashes;
+            if(seeder_list.find(hash) == seeder_list.end()){
+                printf("hash not found\n");
+            }
+            else {
+                printf("found\n");
+                found_hashes = seeder_list[hash];
+                for (int i = 0; i < found_hashes.size(); i++) {
+                    cout << "file = " << found_hashes[i].first << "\n" << "ip port = " << found_hashes[i].second << "\n";
+                }
+            }
+        }
+        bzero(buffer, 1024);
+
     }
 
     close(newSocket);
+    printf("here\n");
 
 
 }
@@ -119,6 +151,8 @@ int main(){
 
         thread cl(client, newSocket, newAddr);
         cl.detach();
+
+        //break;
     }
 
     close(newSocket);

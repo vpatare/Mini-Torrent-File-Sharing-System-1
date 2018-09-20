@@ -17,7 +17,11 @@
 
 using namespace std;
 
-
+//exit = send 0
+//share = send 1
+//get = send 2
+//show downloads= send 3
+//remove = send 4
 
 void bin2hex( unsigned char * src, int len, char * hex )
 {
@@ -126,7 +130,7 @@ seeder_data create_mtorrent(char* path, char* dest, char* tracker1, char* tracke
         SHA1(buffer, n, obuf);
         bin2hex(obuf, sizeof(obuf), str);
         fwrite(str, 1, 20, out);
-        fwrite("\n", 1, 1, out);
+        //fwrite("\n", 1, 1, out);
 
         if(itr == 0) {
             strncpy(total_hash, str, 20);
@@ -145,6 +149,8 @@ seeder_data create_mtorrent(char* path, char* dest, char* tracker1, char* tracke
     data.hash_of_hash = hash_of_hash;
     data.ip_port = ip_port;
     data.success = 1;
+    fwrite("\n", 1, 1, out);
+    fwrite(hash_of_hash, 1, 40, out);
     fclose(in);
     fclose(out);
 
@@ -183,6 +189,9 @@ void peer_as_server(string ip_port) {
     {
         printf("[-] Error in binding peer server\n");
         exit(EXIT_FAILURE);
+    }
+    else {
+        printf("[+] Bind with peer server\n");
     }
 }
 
@@ -236,6 +245,7 @@ int main(int argc, char* argv[]){
                 strcat(to_send, " ");
                 strcat(to_send, data.ip_port);
                 strcat(to_send, "\n");
+                send(clientSocket, "1", 1, 0);
                 send(clientSocket, to_send, strlen(to_send), 0);
                 printf("SUCCESS\n");
                 //printf("file = %s\n", data.file);
@@ -250,16 +260,38 @@ int main(int argc, char* argv[]){
 
 
         if (strcmp(command[0], "get") == 0) {
+            char *hash = (char*) malloc(40 * sizeof(char));
+            //printf("torrent = %s\n", command[1]);
             FILE* fp = fopen(command[1], "rb");
-
+            char c;
+            int line_count = 0;
+            int i = 0;
+            while ((c = getc(fp)) != EOF) {
+                //printf("line no = %d\n", line_count);
+                if(line_count == 5) {
+                    //printf("%d\n", i);
+                    hash[i] = c;
+                    i++;
+                }
+                else {
+                    if(c == '\n')
+                        line_count++;
+                }
+            }
+            hash[i] = '\0';
+            //printf("hash = %s", hash);
+            send(clientSocket, "2", 1, 0);
+            send(clientSocket, hash, strlen(hash), 0);
 
         }
 
 
         if (strcmp(command[0], "exit") == 0) {
-            send(clientSocket, command[0], sizeof(command[0]), 0);
+            //send(clientSocket, "0", 1, 0);
+            //send(clientSocket, command[0], sizeof(command[0]), 0);
             close(clientSocket);
             printf("disconnecting\n");
+            //bzero(buffer, sizeof(buffer));
             exit(1);
         }
         bzero(buffer, sizeof(buffer));
