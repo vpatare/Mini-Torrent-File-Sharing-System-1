@@ -10,6 +10,7 @@
 #include <bits/stdc++.h>
 #include <fcntl.h>
 #include <pthread.h>
+#include <fstream>
 #include <thread>
 
 using namespace std;
@@ -105,7 +106,23 @@ void client(int newSocket, struct sockaddr_in newAddr)
 
 int main(){
 
-    map<string, vector<pair<string, string> > > seeder_list;
+    /*ifstream infile("seeders.txt");
+
+    string line;
+
+    while(getline(infile, line)) {
+        istringstream iss(line);
+        vector<string> result((istream_iterator<string>(iss)), istream_iterator<string>());
+        seeder_list[result[1]].push_back(make_pair(result[0], result[2]));
+    }
+
+    for (auto i = seeder_list.begin(); i != seeder_list.end(); i++) {
+        cout << i->first << "==> \n";
+        for (auto j = i->second.begin(); j != i->second.end(); j++) {
+            cout << "file=" << j->first << "\n" << " ip_port=" << j->second << "\n";
+        }
+
+    }*/
 
     int sockfd, ret;
     int opt = 1;
@@ -142,6 +159,33 @@ int main(){
     }else{
         printf("[-]Error in binding.\n");
     }
+
+
+    ifstream infile("seeders.txt");
+
+    string line;
+
+    while(getline(infile, line)) {
+        istringstream iss(line);
+        vector<string> result((istream_iterator<string>(iss)), istream_iterator<string>());
+        if (seeder_list.find(result[1]) == seeder_list.end()) {
+            //printf("not found\n");
+            vector<pair<string, string> > second;
+            second.push_back(pair<string, string>(result[0], result[2]));
+            seeder_list.insert(pair<string, vector<pair<string, string> > >(result[1], second));
+        } else {
+            //printf("found\n");
+            seeder_list[result[1]].push_back(pair<string, string>(result[0], result[2]));
+        }
+    }
+/*
+    for (auto i = seeder_list.begin(); i != seeder_list.end(); i++) {
+        cout << i->first << "==> \n";
+        for (auto j = i->second.begin(); j != i->second.end(); j++) {
+            cout << "file=" << j->first << "\n" << " ip_port=" << j->second << "\n";
+        }
+
+    }*/
     while(1){
         newSocket = accept(sockfd, (struct sockaddr*)&newAddr, &addr_size);
         if(newSocket < 0){
