@@ -152,6 +152,40 @@ seeder_data create_mtorrent(char* path, char* dest, char* tracker1, char* tracke
 
 }
 
+void peer_as_server(string ip_port) {
+    int sockfd;
+    char buffer[BUFFER_SIZE];
+    struct sockaddr_in peerservaddr, peercliaddr;
+    string peer_upload_ip_str = ip_port.substr(0, ip_port.find_first_of(":"));
+    string peer_upload_port_str = ip_port.substr(peer_upload_ip_str.size() + 1);
+    char peer_upload_ip[peer_upload_ip_str.size() + 1];
+    //char peer_upload_port[peer_upload_port_str.size() + 1];
+    strcpy(peer_upload_ip, peer_upload_ip_str.c_str());
+    //strcpy(peer_upload_port, peer_upload_port_str.c_str());
+    int peer_upload_port = stoi(peer_upload_port_str);
+
+    if ( (sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) {
+        printf("[-] Error creating peer server\n");
+        exit(EXIT_FAILURE);
+    }
+    else
+        printf("[+] peer server created\n");
+
+    memset(&peerservaddr, 0, sizeof(peerservaddr));
+    memset(&peercliaddr, 0, sizeof(peercliaddr));
+    printf("ip = %s port = %d\n", peer_upload_ip, peer_upload_port);
+    peerservaddr.sin_family = AF_INET;
+    peerservaddr.sin_addr.s_addr = inet_addr(peer_upload_ip);
+    peerservaddr.sin_port = htons(peer_upload_port);
+
+    if ( bind(sockfd, (const struct sockaddr *)&peerservaddr,
+              sizeof(peerservaddr)) < 0 )
+    {
+        printf("[-] Error in binding peer server\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
 int main(int argc, char* argv[]){
     char* client_ip_upload_port = argv[1];
     char* tracker1_ip_port = argv[2];
@@ -159,6 +193,11 @@ int main(int argc, char* argv[]){
     int clientSocket, ret;
     struct sockaddr_in serverAddr;
     char buffer[1024];
+
+    string client_upload(client_ip_upload_port);
+
+    thread peer_upload(peer_as_server, client_upload);
+    peer_upload.detach();
 
     clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     if(clientSocket < 0){
@@ -208,6 +247,15 @@ int main(int argc, char* argv[]){
                 printf("not executed\n");
             bzero(buffer, sizeof(buffer));
         }
+
+
+        if (strcmp(command[0], "get") == 0) {
+            FILE* fp = fopen(command[1], "rb");
+
+
+        }
+
+
         if (strcmp(command[0], "exit") == 0) {
             send(clientSocket, command[0], sizeof(command[0]), 0);
             close(clientSocket);

@@ -1,2 +1,1 @@
-/home/vivek/CLionProjects/abc_2.txt dce864ea482b097efead692ee112cef4774ba33f 192.168.1.20:8754
-/home/vivek/CLionProjects/client_server/thar.mp3 bfe0643687aa8bea558f2372f3d2e4a3827c83ac 192.168.1.20:8754
+/home/vivek/CLionProjects/abc_2.txt dce864ea482b097efead692ee112cef4774ba33f 127.0.0.45:4444
