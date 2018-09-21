@@ -203,10 +203,22 @@ int main(int argc, char* argv[]){
     struct sockaddr_in serverAddr;
     char buffer[1024];
 
+
+    //converting tracker1 into proper form
+    string tracker1_ip_port_str(tracker1_ip_port);
+    string tracker1_ip_str = tracker1_ip_port_str.substr(0, tracker1_ip_port_str.find_first_of(":"));
+    string tracker1_port_str = tracker1_ip_port_str.substr(tracker1_ip_str.size() + 1);
+    char tracker1_ip[tracker1_ip_str.size() + 1];
+    //char peer_upload_port[peer_upload_port_str.size() + 1];
+    strcpy(tracker1_ip, tracker1_ip_str.c_str());
+    //strcpy(peer_upload_port, peer_upload_port_str.c_str());
+    int tracker1_port = stoi(tracker1_port_str);
+
+
     string client_upload(client_ip_upload_port);
 
-    thread peer_upload(peer_as_server, client_upload);
-    peer_upload.detach();
+    /*thread peer_upload(peer_as_server, client_upload);
+    peer_upload.detach();*/
 
     clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     if(clientSocket < 0){
@@ -217,8 +229,8 @@ int main(int argc, char* argv[]){
 
     memset(&serverAddr, '\0', sizeof(serverAddr));
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(PORT);
-    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    serverAddr.sin_port = htons(tracker1_port);
+    serverAddr.sin_addr.s_addr = inet_addr(tracker1_ip); // server address
 
     ret = connect(clientSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr));
     if(ret < 0){
@@ -226,9 +238,6 @@ int main(int argc, char* argv[]){
         exit(1);
     }
     printf("[+]Connected to Server.\n");
-
-
-
     while(1) {
         fgets(buffer, 1024, stdin);
         //getline(buffer, 1024);
@@ -287,7 +296,7 @@ int main(int argc, char* argv[]){
 
 
         if (strcmp(command[0], "exit") == 0) {
-            //send(clientSocket, "0", 1, 0);
+            send(clientSocket, "0", 1, 0);
             //send(clientSocket, command[0], sizeof(command[0]), 0);
             close(clientSocket);
             printf("disconnecting\n");

@@ -1,2 +1,2 @@
-/home/vivek/CLionProjects/File_Sharing_System/abc.txt dce864ea482b097efead692ee112cef4774ba33f 127.0.0.45:1111
-/home/vivek/CLionProjects/client_server/thar.mp3 bfe0643687aa8bea558f2372f3d2e4a3827c83ac 127.0.0.45:2222
+/home/vivek/CLionProjects/File_Sharing_System/abc.txt dce864ea482b097efead692ee112cef4774ba33f 127.0.0.1:2345
+/home/vivek/CLionProjects/File_Sharing_System/abc_2.txt dce864ea482b097efead692ee112cef4774ba33f 127.0.0.45:7777

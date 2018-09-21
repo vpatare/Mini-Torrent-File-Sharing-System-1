@@ -32,12 +32,13 @@ void client(int newSocket, struct sockaddr_in newAddr)
         recv(newSocket, buffer, 1, 0);
 
         //exit
-        /*if (strcmp(buffer, "0") == 0) {
-            recv(newSocket, buffer, 1024, 0);
+        if (strcmp(buffer, "0") == 0) {
+            //recv(newSocket, buffer, 1024, 0);
             printf("Disconnected from %s:%d\n", inet_ntoa(newAddr.sin_addr), ntohs(newAddr.sin_port));
             //terminate();
+            //close(newSocket);
             break;
-        }*/
+        }
 
 
         //share
@@ -99,30 +100,25 @@ void client(int newSocket, struct sockaddr_in newAddr)
     }
 
     close(newSocket);
-    printf("here\n");
+    //printf("here\n");
 
 
 }
 
-int main(){
+int main(int argc, char* argv[]){
 
-    /*ifstream infile("seeders.txt");
 
-    string line;
+    char* tracker1_ip_port = argv[1];
+    char* tracker2_ip_port = argv[2];
 
-    while(getline(infile, line)) {
-        istringstream iss(line);
-        vector<string> result((istream_iterator<string>(iss)), istream_iterator<string>());
-        seeder_list[result[1]].push_back(make_pair(result[0], result[2]));
-    }
-
-    for (auto i = seeder_list.begin(); i != seeder_list.end(); i++) {
-        cout << i->first << "==> \n";
-        for (auto j = i->second.begin(); j != i->second.end(); j++) {
-            cout << "file=" << j->first << "\n" << " ip_port=" << j->second << "\n";
-        }
-
-    }*/
+    string tracker1_ip_port_str(tracker1_ip_port);
+    string tracker1_ip_str = tracker1_ip_port_str.substr(0, tracker1_ip_port_str.find_first_of(":"));
+    string tracker1_port_str = tracker1_ip_port_str.substr(tracker1_ip_str.size() + 1);
+    char tracker1_ip[tracker1_ip_str.size() + 1];
+    //char peer_upload_port[peer_upload_port_str.size() + 1];
+    strcpy(tracker1_ip, tracker1_ip_str.c_str());
+    //strcpy(peer_upload_port, peer_upload_port_str.c_str());
+    int tracker1_port = stoi(tracker1_port_str);
 
     int sockfd, ret;
     int opt = 1;
@@ -144,8 +140,8 @@ int main(){
 
     memset(&serverAddr, '\0', sizeof(serverAddr));
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(PORT);
-    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    serverAddr.sin_port = htons(tracker1_port);
+    serverAddr.sin_addr.s_addr = inet_addr(tracker1_ip);
 
     ret = bind(sockfd, (struct sockaddr*)&serverAddr, sizeof(serverAddr));
     if(ret < 0){
@@ -178,8 +174,7 @@ int main(){
             seeder_list[result[1]].push_back(pair<string, string>(result[0], result[2]));
         }
     }
-/*
-    for (auto i = seeder_list.begin(); i != seeder_list.end(); i++) {
+    /*for (auto i = seeder_list.begin(); i != seeder_list.end(); i++) {
         cout << i->first << "==> \n";
         for (auto j = i->second.begin(); j != i->second.end(); j++) {
             cout << "file=" << j->first << "\n" << " ip_port=" << j->second << "\n";
@@ -189,6 +184,7 @@ int main(){
     while(1){
         newSocket = accept(sockfd, (struct sockaddr*)&newAddr, &addr_size);
         if(newSocket < 0){
+            printf("[-]connection denied\n");
             exit(1);
         }
         printf("Connection accepted from %s:%d\n", inet_ntoa(newAddr.sin_addr), ntohs(newAddr.sin_port));
