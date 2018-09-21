@@ -139,7 +139,6 @@ seeder_data create_mtorrent(char* path, char* dest, char* tracker1, char* tracke
             strncat(total_hash, str, 20);
         }
         itr++;
-
     }
     //printf("%s\n", total_hash);
     SHA1((unsigned char*)total_hash, strlen(total_hash), obuf);
@@ -202,6 +201,7 @@ int main(int argc, char* argv[]){
     int clientSocket, ret;
     struct sockaddr_in serverAddr;
     char buffer[1024];
+    char rcvbuffer[1024];
 
 
     //converting tracker1 into proper form
@@ -217,8 +217,8 @@ int main(int argc, char* argv[]){
 
     string client_upload(client_ip_upload_port);
 
-    /*thread peer_upload(peer_as_server, client_upload);
-    peer_upload.detach();*/
+    thread peer_upload(peer_as_server, client_upload);
+    peer_upload.detach();
 
     clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     if(clientSocket < 0){
@@ -291,6 +291,23 @@ int main(int argc, char* argv[]){
             //printf("hash = %s", hash);
             send(clientSocket, "2", 1, 0);
             send(clientSocket, hash, strlen(hash), 0);
+            int total_found;
+            recv(clientSocket, &total_found, sizeof(total_found), 0);
+            int found = ntohl(total_found);
+            printf("%d found\n", found);
+            vector < pair <string, string> > found_files;
+            for(int i = 0; i < found; i++) {
+                recv(clientSocket, buffer, 1024, 0);
+                string file_path(buffer);
+                bzero(buffer, BUFFER_SIZE);
+                recv(clientSocket, buffer, 1024, 0);
+                string ip_port(buffer);
+                bzero(buffer, BUFFER_SIZE);
+                found_files.push_back(make_pair(file_path, ip_port));
+            }
+            /*for(int i = 0; i < found; i++) {
+                cout << "filepath = "<< found_files[i].first << " ip_port = " << found_files[i].second << "\n";
+            }*/
 
         }
 

@@ -1,2 +1,2 @@
-/home/vivek/CLionProjects/File_Sharing_System/abc.txt dce864ea482b097efead692ee112cef4774ba33f 127.0.0.1:2345
-/home/vivek/CLionProjects/File_Sharing_System/abc_2.txt dce864ea482b097efead692ee112cef4774ba33f 127.0.0.45:7777
+/home/vivek/CLionProjects/File_Sharing_System/abc.txt dce864ea482b097efead692ee112cef4774ba33f 127.0.0.1:1232
+/home/vivek/CLionProjects/File_Sharing_System/abc_2.txt dce864ea482b097efead692ee112cef4774ba33f 127.0.0.1:1232

@@ -86,12 +86,26 @@ void client(int newSocket, struct sockaddr_in newAddr)
             vector<pair<string, string> > found_hashes;
             if(seeder_list.find(hash) == seeder_list.end()){
                 printf("hash not found\n");
+                int zero = 0;
+                int temp = htonl(zero);
+                send(newSocket, &temp, sizeof(temp) , 0);
             }
             else {
                 printf("found\n");
                 found_hashes = seeder_list[hash];
+                int total_found = found_hashes.size();
                 for (int i = 0; i < found_hashes.size(); i++) {
                     cout << "file = " << found_hashes[i].first << "\n" << "ip port = " << found_hashes[i].second << "\n";
+                }
+                int temp = htonl(total_found);
+                send(newSocket, &temp, sizeof(temp), 0);
+                for(int i = 0; i < total_found; i++) {
+                    char file_path[found_hashes[i].first.size() + 1];
+                    char ip_port[found_hashes[i].second.size() + 1];
+                    strcpy(file_path, found_hashes[i].first.c_str());
+                    strcpy(ip_port, found_hashes[i].second.c_str());
+                    send(newSocket, file_path, strlen(file_path), 0);
+                    send(newSocket, ip_port, strlen(ip_port), 0);
                 }
             }
         }
