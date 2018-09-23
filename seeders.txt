@@ -4,3 +4,5 @@
 /home/vivek/CLionProjects/File_Sharing_System/abc.txt.mtorrent 3d6a26655dbdc62e2c5e315713a52f34fe2cbcc7 127.0.0.1:1232
 /home/vivek/CLionProjects/File_Sharing_System/abc.txt dce864ea482b097efead692ee112cef4774ba33f 127.0.0.1:1232
 /home/vivek/CLionProjects/File_Sharing_System/th1.mp3 6d93d233f5b9cce95d729d381978fafd0ffd4e10 127.0.0.1:1232
+/home/vivek/CLionProjects/File_Sharing_System/big.txt f1d6385ab16293127aff8cdcf6318f64f5627cbd 127.0.0.1:1232
+/home/vivek/CLionProjects/File_Sharing_System/sample.mp3 865371477943c040c223f79175ae4ae35150fc13 127.0.0.1:1232

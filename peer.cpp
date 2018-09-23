@@ -252,14 +252,25 @@ void peer_as_server(string ip_port) {
         send(newsocket, &residue, sizeof(residue), 0);
         char temp_recv[1];
 
-        for (int i = 0; i < parts; i++) {
+        ifstream myfile(fname, ios::in | ios::binary);
+        for(int i = 0; i < parts; i++) {
+            bzero(bigbuffer, sizeof(bigbuffer));
+            myfile.read(bigbuffer, 1500);
+            write(newsocket, bigbuffer, 1500);
+        }
+
+
+
+
+        /*for (int i = 0; i < parts; i++) {
             bzero(bigbuffer, sizeof(bigbuffer));
             fread(bigbuffer, 1, sizeof(bigbuffer), fp);
             cout << "*i = " << i << "->" << bigbuffer << "\n---------------\n";
             write(newsocket, bigbuffer, sizeof(bigbuffer));
             read(newsocket, temp_recv, 1);
-        }
+        }*/
         cout << "sending done\n";
+        fclose(fp);
 
     }
 }
@@ -441,13 +452,17 @@ int main(int argc, char* argv[]){
                     printf("cant open write file on peer\n");
                     exit(1);
                 }
+
+                ofstream myfile(save_location, ios::out | ios::binary);
                 int i = 0;
-                while(i != parts) {
+                while(i != parts - 1) {
                     read(peersocket, bigbuffer, sizeof(bigbuffer));
                     write(peersocket, "1", 1);
-                    fputs(bigbuffer, wr);
+                    myfile.write(bigbuffer, sizeof(bigbuffer));
                     i++;
                 }
+                read(peersocket, bigbuffer, residue);
+                myfile.write(bigbuffer, residue);
                 cout << "recieving done\n";
                 close(peersocket);
                 fclose(wr);
