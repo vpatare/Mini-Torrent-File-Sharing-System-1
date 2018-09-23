@@ -1,2 +1,6 @@
 /home/vivek/CLionProjects/File_Sharing_System/abc.txt dce864ea482b097efead692ee112cef4774ba33f 127.0.0.1:1232
-/home/vivek/CLionProjects/File_Sharing_System/abc_2.txt dce864ea482b097efead692ee112cef4774ba33f 127.0.0.1:1232
+/home/vivek/CLionProjects/client_server/thar.mp3 bfe0643687aa8bea558f2372f3d2e4a3827c83ac 127.0.0.1:1234
+/home/vivek/CLionProjects/File_Sharing_System/abc.txt dce864ea482b097efead692ee112cef4774ba33f 127.0.0.1:1232
+/home/vivek/CLionProjects/File_Sharing_System/abc.txt.mtorrent 3d6a26655dbdc62e2c5e315713a52f34fe2cbcc7 127.0.0.1:1232
+/home/vivek/CLionProjects/File_Sharing_System/abc.txt dce864ea482b097efead692ee112cef4774ba33f 127.0.0.1:1232
+/home/vivek/CLionProjects/File_Sharing_System/th1.mp3 6d93d233f5b9cce95d729d381978fafd0ffd4e10 127.0.0.1:1232

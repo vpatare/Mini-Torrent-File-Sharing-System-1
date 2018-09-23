@@ -99,17 +99,22 @@ void client(int newSocket, struct sockaddr_in newAddr)
                 }
                 int temp = htonl(total_found);
                 send(newSocket, &temp, sizeof(temp), 0);
+                char tempbuff[1];
                 for(int i = 0; i < total_found; i++) {
                     char file_path[found_hashes[i].first.size() + 1];
                     char ip_port[found_hashes[i].second.size() + 1];
                     strcpy(file_path, found_hashes[i].first.c_str());
                     strcpy(ip_port, found_hashes[i].second.c_str());
-                    send(newSocket, file_path, strlen(file_path), 0);
-                    send(newSocket, ip_port, strlen(ip_port), 0);
+                    cout << "sending filepath = " << file_path << " ip = " << ip_port << "\n";
+                    send(newSocket, file_path, sizeof(file_path), 0);
+                    recv(newSocket, tempbuff, 1, 0);
+                    send(newSocket, ip_port, sizeof(ip_port), 0);
+                    recv(newSocket, tempbuff, 1, 0);
                 }
             }
         }
         bzero(buffer, 1024);
+
 
     }
 
@@ -175,6 +180,7 @@ int main(int argc, char* argv[]){
 
     string line;
 
+    //loading earlier seederfile in map if present
     while(getline(infile, line)) {
         istringstream iss(line);
         vector<string> result((istream_iterator<string>(iss)), istream_iterator<string>());
