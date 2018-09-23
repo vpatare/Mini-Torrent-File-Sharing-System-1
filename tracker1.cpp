@@ -18,6 +18,7 @@ using namespace std;
 #define PORT 4444
 
 char buffer[1024];
+char tempbuff[1];
 map<string, vector<pair<string, string> > > seeder_list;
 FILE* seeder_file;
 struct sockaddr_in newAddr;
@@ -30,6 +31,8 @@ void client(int newSocket, struct sockaddr_in newAddr)
         bzero(buffer, 1024);
         //printf("%s\n", buffer);
         recv(newSocket, buffer, 1, 0);
+        send(newSocket, "1", 1, 0);
+        printf("recieved command type = %s\n", buffer);
 
         //exit
         if (strcmp(buffer, "0") == 0) {
@@ -43,10 +46,13 @@ void client(int newSocket, struct sockaddr_in newAddr)
 
         //share
         if(strcmp(buffer, "1") == 0){                       //controls share only
+            printf("in share on server\n");
             recv(newSocket, buffer, 1024, 0);
-
+            send(newSocket, "1", 1, 0);
+            printf("to send recieved = %s\n", buffer);
             string temp(buffer);
             istringstream iss(temp);
+            cout << "to send in string = " << temp << "\n";
             vector<string> result((istream_iterator<string>(iss)), istream_iterator<string>());
 
             //printf("%s\n", buffer);
@@ -60,12 +66,12 @@ void client(int newSocket, struct sockaddr_in newAddr)
             fwrite("\n", 1, 1, seeder_file);
 
             if (seeder_list.find(result[1]) == seeder_list.end()) {
-                //printf("not found\n");
+                printf("not found on tracker1\n");
                 vector<pair<string, string> > second;
                 second.push_back(pair<string, string>(result[0], client_ip_port));
                 seeder_list.insert(pair<string, vector<pair<string, string> > >(result[1], second));
             } else {
-                //printf("found\n");
+                printf("found on tracker1\n");
                 seeder_list[result[1]].push_back(pair<string, string>(result[0], client_ip_port));
             }
 
@@ -81,6 +87,7 @@ void client(int newSocket, struct sockaddr_in newAddr)
 
         else if(strcmp(buffer, "2") == 0) {
             recv(newSocket, buffer, 1024, 0);
+            send(newSocket, "1", 1, 0);
             //printf("%s\n", buffer);
             string hash(buffer);
             vector<pair<string, string> > found_hashes;
@@ -89,6 +96,7 @@ void client(int newSocket, struct sockaddr_in newAddr)
                 int zero = 0;
                 int temp = htonl(zero);
                 send(newSocket, &temp, sizeof(temp) , 0);
+                recv(newSocket, tempbuff, 1, 0);
             }
             else {
                 printf("found\n");
@@ -99,7 +107,7 @@ void client(int newSocket, struct sockaddr_in newAddr)
                 }
                 int temp = htonl(total_found);
                 send(newSocket, &temp, sizeof(temp), 0);
-                char tempbuff[1];
+                recv(newSocket, tempbuff, 1, 0);
                 for(int i = 0; i < total_found; i++) {
                     char file_path[found_hashes[i].first.size() + 1];
                     char ip_port[found_hashes[i].second.size() + 1];

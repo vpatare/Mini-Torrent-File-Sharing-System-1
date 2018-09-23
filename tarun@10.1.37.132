@@ -130,7 +130,7 @@ seeder_data create_mtorrent(char* path, char* dest, char* tracker1, char* tracke
     print(temp_path);
     struct stat filestat;
     char* abs_path = realpath(temp_path, NULL);
-    int ret = stat(temp_path, &filestat);
+    int ret = stat(abs_path, &filestat);
     if(ret < 0) {
         printf("error getting stat file\n");
     }
@@ -279,7 +279,6 @@ void peer_as_server(string ip_port) {
             bzero(bigbuffer, sizeof(bigbuffer));
             myfile.read(bigbuffer, 1500);
             write(newsocket, bigbuffer, 1500);
-            recv(newsocket, tempbuff, 1, 0);
 
         }
 
@@ -364,7 +363,7 @@ int main(int argc, char* argv[]){
 
         if (strcmp(command_to, "share") == 0) {
             printf("in share\n");
-            data = create_mtorrent(torrent_location, save_location, tracker1_ip_port, tracker2_ip_port, argv[1]);
+            data = create_mtorrent(command[1], command[2], tracker1_ip_port, tracker2_ip_port, argv[1]);
             print("creating mtorrent");
             if(data.success == 1) {
                 print("mtorrent created");
@@ -393,13 +392,10 @@ int main(int argc, char* argv[]){
         }
 
 
-        if (strcmp(command_to, "get") == 0) {
-            print("inside get of peer client");
+        if (strcmp(command[0], "get") == 0) {
             char *hash = (char*) malloc(40 * sizeof(char));
             printf("path to save = %s\n", save_location);
-            FILE* fp = fopen(torrent_location, "r");
-            if(fp == NULL)
-                print("error opening file in client peer");
+            FILE* fp = fopen(command[1], "r");
             char c;
             int line_count = 0;
             int i = 0;
@@ -416,15 +412,12 @@ int main(int argc, char* argv[]){
                 }
             }
             hash[i] = '\0';
-            printf("hash = %s\n", hash);
-            print("sending to tracker 1 for get");
+            //printf("hash = %s", hash);
             send(clientSocket, "2", 1, 0);
             recv(clientSocket, tempbuff, 1, 0);
-            printf("sending hash to be found to tracker1");
             send(clientSocket, hash, strlen(hash), 0);
             recv(clientSocket, tempbuff, 1, 0);
             int total_found;
-            printf("getting hash on client\n");
             recv(clientSocket, &total_found, sizeof(total_found), 0);
             send(clientSocket, "1", 1, 0);
             int found = ntohl(total_found);
@@ -518,7 +511,6 @@ int main(int argc, char* argv[]){
                     i++;
                 }
                 read(peersocket, bigbuffer, residue);
-                write(peersocket, "1", 1);
                 myfile.write(bigbuffer, residue);
                 cout << "recieving done\n";
                 close(peersocket);
@@ -527,7 +519,8 @@ int main(int argc, char* argv[]){
 
         }
 
-        if (strcmp(command_to, "exit") == 0) {
+
+        if (strcmp(command[0], "exit") == 0) {
             send(clientSocket, "0", 1, 0);
             recv(clientSocket, tempbuff, 1, 0);
             //send(clientSocket, command[0], sizeof(command[0]), 0);

@@ -12,11 +12,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a99d06fd-2ab8-4309-a4c9-364671787dad" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/abc.txt.mtorrent" beforeDir="false" afterPath="$PROJECT_DIR$/abc.txt.mtorrent" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/peer" beforeDir="false" afterPath="$PROJECT_DIR$/peer" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/peer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/peer.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/peer.o" beforeDir="false" afterPath="$PROJECT_DIR$/peer.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/seeders.txt" beforeDir="false" afterPath="$PROJECT_DIR$/seeders.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thar.mp3.mtorrent" beforeDir="false" afterPath="$PROJECT_DIR$/thar.mp3.mtorrent" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tracker1" beforeDir="false" afterPath="$PROJECT_DIR$/tracker1" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tracker1.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tracker1.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tracker1.o" beforeDir="false" afterPath="$PROJECT_DIR$/tracker1.o" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -51,13 +55,13 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="cpp" value="11192" />
+          <entry key="cpp" value="12590" />
           <entry key="makefile" value="206" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="ObjectiveC" value="11192" />
+          <entry key="ObjectiveC" value="12590" />
           <entry key="PLAIN_TEXT" value="206" />
         </counts>
       </usages-collector>
@@ -68,15 +72,14 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/peer.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="303">
-              <caret line="464" column="49" selection-start-line="464" selection-start-column="49" selection-end-line="464" selection-end-column="49" />
+            <state relative-caret-position="227">
+              <caret line="521" column="49" lean-forward="true" selection-start-line="521" selection-start-column="49" selection-end-line="521" selection-end-column="49" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
                 <element signature="e#396#559#0" />
                 <element signature="e#561#1773#0" />
                 <element signature="e#1774#2036#0" />
-                <element signature="e#2156#3671#0" />
-                <marker date="1537667086036" expanded="true" signature="10394:15837" ph="{...}" />
+                <marker date="1537711154541" expanded="true" signature="11648:17957" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -94,8 +97,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tracker1.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2742">
-              <caret line="59" column="44" selection-start-line="59" selection-start-column="44" selection-end-line="59" selection-end-column="44" />
+            <state relative-caret-position="-2799">
+              <caret line="34" column="21" selection-start-line="34" selection-start-column="16" selection-end-line="34" selection-end-column="21" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -107,26 +110,13 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>result</find>
-      <find>succe</find>
-      <find>bzer</find>
-      <find>result[2</find>
-      <find>seeder</find>
-      <find>seeder_file</find>
-      <find>iss</find>
-      <find>newAddr</find>
-      <find>disc</find>
-      <find>addr_s</find>
-      <find>printf</find>
       <find>close</find>
       <find>ip_port</find>
       <find>strlen</find>
       <find>file_path</find>
       <find>++</find>
-      <find>recv</find>
       <find>filepath =</find>
       <find>socket</find>
-      <find>send</find>
       <find>sz</find>
       <find>waiti</find>
       <find>argv[2</find>
@@ -137,6 +127,19 @@
       <find>stat</find>
       <find>peer_as</find>
       <find>recieved</find>
+      <find>path to</find>
+      <find>share</find>
+      <find>[1]</find>
+      <find>tempbuff</find>
+      <find>&quot;1&quot;</find>
+      <find>&quot;0&quot;</find>
+      <find>recv</find>
+      <find>send</find>
+      <find>parts flo</find>
+      <find>ifstr</find>
+      <find>exit(1</find>
+      <find>get</find>
+      <find>recie</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -145,8 +148,8 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/tracker1.cpp" />
         <option value="$PROJECT_DIR$/makefile" />
+        <option value="$PROJECT_DIR$/tracker1.cpp" />
         <option value="$PROJECT_DIR$/peer.cpp" />
       </list>
     </option>
@@ -227,12 +230,12 @@
       <option name="presentableId" value="Default" />
       <updated>1537393477985</updated>
       <workItem from="1537393479364" duration="718000" />
-      <workItem from="1537394913337" duration="107998000" />
+      <workItem from="1537394913337" duration="123816000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="108716000" />
+    <option name="totallyTimeSpent" value="124534000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="51" y="25" width="1315" height="743" extended-state="6" />
@@ -311,8 +314,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tracker1.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2742">
-          <caret line="59" column="44" selection-start-line="59" selection-start-column="44" selection-end-line="59" selection-end-column="44" />
+        <state relative-caret-position="-2799">
+          <caret line="34" column="21" selection-start-line="34" selection-start-column="16" selection-end-line="34" selection-end-column="21" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -321,15 +324,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/peer.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="303">
-          <caret line="464" column="49" selection-start-line="464" selection-start-column="49" selection-end-line="464" selection-end-column="49" />
+        <state relative-caret-position="227">
+          <caret line="521" column="49" lean-forward="true" selection-start-line="521" selection-start-column="49" selection-end-line="521" selection-end-column="49" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
             <element signature="e#396#559#0" />
             <element signature="e#561#1773#0" />
             <element signature="e#1774#2036#0" />
-            <element signature="e#2156#3671#0" />
-            <marker date="1537667086036" expanded="true" signature="10394:15837" ph="{...}" />
+            <marker date="1537711154541" expanded="true" signature="11648:17957" ph="{...}" />
           </folding>
         </state>
       </provider>
