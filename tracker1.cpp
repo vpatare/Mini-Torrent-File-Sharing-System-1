@@ -32,7 +32,7 @@ void client(int newSocket, struct sockaddr_in newAddr)
         //printf("%s\n", buffer);
         recv(newSocket, buffer, 1, 0);
         send(newSocket, "1", 1, 0);
-        printf("recieved command type = %s\n", buffer);
+       // printf("recieved command type = %s\n", buffer);
 
         //exit
         if (strcmp(buffer, "0") == 0) {
@@ -46,15 +46,14 @@ void client(int newSocket, struct sockaddr_in newAddr)
 
         //share
         if(strcmp(buffer, "1") == 0){                       //controls share only
-            printf("in share on server\n");
+         //   printf("in share on server\n");
             recv(newSocket, buffer, 1024, 0);
             send(newSocket, "1", 1, 0);
-            printf("to send recieved = %s\n", buffer);
+           // printf("to send recieved = %s\n", buffer);
             string temp(buffer);
             istringstream iss(temp);
-            cout << "to send in string = " << temp << "\n";
+           // cout << "to send in string = " << temp << "\n";
             vector<string> result((istream_iterator<string>(iss)), istream_iterator<string>());
-
             //printf("%s\n", buffer);
             seeder_file = fopen("seeders.txt", "ab");
             //string client_address = inet_ntoa(newAddr.sin_addr);   //getting clients address and port
@@ -76,15 +75,16 @@ void client(int newSocket, struct sockaddr_in newAddr)
             }
 
             //printing seeder_list data structure
-            for (auto i = seeder_list.begin(); i != seeder_list.end(); i++) {
+            /*for (auto i = seeder_list.begin(); i != seeder_list.end(); i++) {
                 cout << i->first << "==> \n";
                 for (auto j = i->second.begin(); j != i->second.end(); j++) {
                     cout << "file=" << j->first << "\n" << " ip_port=" << j->second << "\n";
                 }
 
-            }
+            }*/
         }
 
+        //get
         else if(strcmp(buffer, "2") == 0) {
             recv(newSocket, buffer, 1024, 0);
             send(newSocket, "1", 1, 0);
@@ -92,14 +92,14 @@ void client(int newSocket, struct sockaddr_in newAddr)
             string hash(buffer);
             vector<pair<string, string> > found_hashes;
             if(seeder_list.find(hash) == seeder_list.end()){
-                printf("hash not found\n");
+                //printf("hash not found\n");
                 int zero = 0;
                 int temp = htonl(zero);
                 send(newSocket, &temp, sizeof(temp) , 0);
                 recv(newSocket, tempbuff, 1, 0);
             }
             else {
-                printf("found\n");
+               // printf("found\n");
                 found_hashes = seeder_list[hash];
                 int total_found = found_hashes.size();
                 for (int i = 0; i < found_hashes.size(); i++) {
@@ -113,7 +113,7 @@ void client(int newSocket, struct sockaddr_in newAddr)
                     char ip_port[found_hashes[i].second.size() + 1];
                     strcpy(file_path, found_hashes[i].first.c_str());
                     strcpy(ip_port, found_hashes[i].second.c_str());
-                    cout << "sending filepath = " << file_path << " ip = " << ip_port << "\n";
+                 //   cout << "sending filepath = " << file_path << " ip = " << ip_port << "\n";
                     send(newSocket, file_path, sizeof(file_path), 0);
                     recv(newSocket, tempbuff, 1, 0);
                     send(newSocket, ip_port, sizeof(ip_port), 0);
@@ -121,6 +121,81 @@ void client(int newSocket, struct sockaddr_in newAddr)
                 }
             }
         }
+
+
+        //remove
+        else if(strcmp(buffer, "4") == 0) {
+
+            recv(newSocket, buffer, 1024, 0);
+            send(newSocket, "0", 1, 0);
+            string filename(buffer);
+           // cout << "filename for remove = " << filename << "\n";
+            bzero(buffer, 1024);
+
+            recv(newSocket, buffer, 1024, 0);
+            send(newSocket, "0", 1, 0);
+            string hash(buffer);
+            //cout << "hashofhash for remove = " << hash << "\n";
+            bzero(buffer, 1024);
+
+            recv(newSocket, buffer, 1024, 0);
+            send(newSocket, "0", 1, 0);
+            string cl_ip_port(buffer);
+            //cout << "client ip port for remove = " << cl_ip_port << "\n";
+            bzero(buffer, 1024);
+
+            auto i = seeder_list[hash].begin();
+            while(i < seeder_list[hash].end()) {
+                if(i->first == filename && i->second == cl_ip_port) {
+                    seeder_list[hash].erase(i);
+                    //deleted from current seederlist
+
+                    //deleting from file
+                    string line_to_delete = filename + " " + hash + " " + cl_ip_port;
+              //      cout << "line to delete = " << line_to_delete << "\n";
+                    string in_line;
+                    ifstream file_in;
+                    file_in.open("seeders.txt");
+                    ofstream tmp;
+                    tmp.open("tmp.txt");
+                    while(getline(file_in, in_line)) {
+                        if(in_line != line_to_delete) {
+                //            printf("nothing to delete \n");
+                            tmp << in_line << "\n";
+                        }
+                    }
+                    tmp.close();
+                    file_in.close();
+                    remove("seeders.txt");
+                  //  printf("removed seeders.txt\n");
+                    rename("tmp.txt", "seeders.txt");
+                    //printf("renaming seeders.txt");
+                    int success;
+                    if( remove(filename.c_str()) != 0) {
+                        success = 0;
+                        send(newSocket, &success, sizeof(success), 0);
+                        recv(newSocket, tempbuff, 1, 0);
+                    }
+                    else {
+                        success = 1;
+                        send(newSocket, &success, sizeof(success), 0);
+                        recv(newSocket, tempbuff, 1, 0);
+                    }
+
+                    break;
+                }
+
+                i++;
+
+            }
+        }
+
+
+        else {
+            //printf("")
+            continue;
+        }
+
         bzero(buffer, 1024);
 
 
@@ -133,7 +208,6 @@ void client(int newSocket, struct sockaddr_in newAddr)
 }
 
 int main(int argc, char* argv[]){
-
 
     char* tracker1_ip_port = argv[1];
     char* tracker2_ip_port = argv[2];

@@ -120,21 +120,27 @@ typedef struct mtorrent {
 seeder_data create_mtorrent(char* path, char* dest, char* tracker1, char* tracker2, char* ip_port) {
 
     seeder_data data;
-    print(path);
+    /*print(path);
     print(dest);
     print(tracker1);
     print(tracker2);
-    print(ip_port);
+    print(ip_port);*/
     char temp_path[BUFFER_SIZE];
     strcpy(temp_path, path);
-    print(temp_path);
+   // print(temp_path);
     struct stat filestat;
     char* abs_path = realpath(temp_path, NULL);
     int ret = stat(temp_path, &filestat);
     if(ret < 0) {
-        printf("error getting stat file\n");
+       // printf("error getting stat file\n");
+        data.ip_port = NULL;
+        data.success = 0;
+        data.hash_of_hash = NULL;
+        data.file = NULL;
+        return data;
     }
-    print(abs_path);
+
+   // print(abs_path);
     size_t size = filestat.st_size;
     FILE *in;
     FILE *out;
@@ -142,12 +148,23 @@ seeder_data create_mtorrent(char* path, char* dest, char* tracker1, char* tracke
     unsigned char buffer[CHUNK_BUFFER_SIZE];
     in = fopen(path, "rb");
     if(in == NULL) {
-        print("error openinng file");
+       // print("error openinng file");
+        data.ip_port = NULL;
+        data.success = 0;
+        data.hash_of_hash = NULL;
+        data.file = NULL;
+        return data;
     }
     out = fopen(dest, "wb");
-    if(out == NULL)
-        print("error oening out file");
-    printf("%s\n%s\n%s\n%zu\n", tracker1, tracker2, abs_path, size);
+    if(out == NULL) {
+        //print("error oening out file");
+        data.ip_port = NULL;
+        data.success = 0;
+        data.hash_of_hash = NULL;
+        data.file = NULL;
+        return data;
+    }
+    //printf("%s\n%s\n%s\n%zu\n", tracker1, tracker2, abs_path, size);
     fprintf(out, "%s\n%s\n%s\n%zu\n", tracker1, tracker2, abs_path, size);
     char str[2*SHA_DIGEST_LENGTH];
     char hash_of_hash[2*SHA_DIGEST_LENGTH];
@@ -234,7 +251,7 @@ void peer_as_server(string ip_port) {
     }
 
     if(listen(sockfd, 10) == 0){
-        printf("[+]Listening....\n");
+        printf("[+] Peer Server Listening....\n");
     }else{
         printf("[-]Error in binding.\n");
     }
@@ -249,7 +266,7 @@ void peer_as_server(string ip_port) {
                ntohs(peerservaddr.sin_port));
         recv(newsocket, buffer, 1024, 0);
         send(newsocket, "1", 1, 0);
-        cout << "filepath recieved = " << buffer << "\n";
+        //cout << "filepath recieved = " << buffer << "\n";
         char fname[100];
         strcpy(fname, buffer);
 
@@ -265,9 +282,9 @@ void peer_as_server(string ip_port) {
         long temp_size = htonl(size);
         double temp = (double) size / (1500 * 1.0);
         int residue = size % 1500;
-        cout << "parts float = " << temp << "\n";
+        //cout << "parts float = " << temp << "\n";
         int parts = ceil(temp);
-        cout << "parts = " << parts << "\n";
+        //cout << "parts = " << parts << "\n";
         send(newsocket, &parts, sizeof(parts), 0);
         recv(newsocket, tempbuff, 1, 0);
         send(newsocket, &residue, sizeof(residue), 0);
@@ -275,6 +292,9 @@ void peer_as_server(string ip_port) {
         char temp_recv[1];
 
         ifstream myfile(fname, ios::in | ios::binary);
+        if(!myfile.is_open()) {
+            printf("file not opened");
+        }
         for(int i = 0; i < parts; i++) {
             bzero(bigbuffer, sizeof(bigbuffer));
             myfile.read(bigbuffer, 1500);
@@ -282,19 +302,8 @@ void peer_as_server(string ip_port) {
             recv(newsocket, tempbuff, 1, 0);
 
         }
-
-
-
-
-        /*for (int i = 0; i < parts; i++) {
-            bzero(bigbuffer, sizeof(bigbuffer));
-            fread(bigbuffer, 1, sizeof(bigbuffer), fp);
-            cout << "*i = " << i << "->" << bigbuffer << "\n---------------\n";
-            write(newsocket, bigbuffer, sizeof(bigbuffer));
-            read(newsocket, temp_recv, 1);
-        }*/
         cout << "sending done\n";
-        fclose(fp);
+        myfile.close();
 
     }
 }
@@ -310,6 +319,8 @@ int main(int argc, char* argv[]){
     char rcvbuffer[1024];
     char bigbuffer[1500];
     char tempbuff[1];
+    char cl_ip_port[100];
+    strcpy(cl_ip_port, argv[1]);
 
 
     //converting tracker1 into proper form
@@ -347,27 +358,36 @@ int main(int argc, char* argv[]){
     }
     printf("[+]Connected to Server.\n");
     while(1) {
-        printf("in while\n");
+       // printf("in while\n");
         fgets(buffer, 1024, stdin);
         //getline(buffer, 1024);
+       // cout << buffer << "\n";
         vector<char *> command = test_split(buffer);
-        printf("command 0 = %s\n", command[0]);
-        printf("command 1 = %s\n", command[1]);
-        printf("command 2 = %s\n", command[2]);
+       // print("split");
+        //printf("command 0 = %s\n", command[0]);
+        //printf("command 1 = %s\n", command[1]);
+        //printf("command 2 = %s\n", command[2]);
         char save_location[100];
         char torrent_location[100];
         char command_to[100];
-        strcpy(save_location, command[2]);
-        strcpy(torrent_location, command[1]);
+        if(command.size()  > 2)
+            strcpy(save_location, command[2]);
+        if(command.size() > 1);
+            strcpy(torrent_location, command[1]);
         strcpy(command_to, command[0]);
         seeder_data data;
-
+       // print(command_to);
+       // print(torrent_location);
         if (strcmp(command_to, "share") == 0) {
-            printf("in share\n");
+            if(command.size() != 3) {
+                print("INVALID ARGUMENTS");
+                continue;
+            }
+           // printf("in share\n");
             data = create_mtorrent(torrent_location, save_location, tracker1_ip_port, tracker2_ip_port, argv[1]);
-            print("creating mtorrent");
+            //print("creating mtorrent");
             if(data.success == 1) {
-                print("mtorrent created");
+             //   print("mtorrent created");
                 char to_send[BUFFER_SIZE];
                 strcpy(to_send, data.file);
                 strcat(to_send, " ");
@@ -375,31 +395,37 @@ int main(int argc, char* argv[]){
                 strcat(to_send, " ");
                 strcat(to_send, data.ip_port);
                 strcat(to_send, "\n");
-                print("sending to server to accpet share");
+               // print("sending to server to accpet share");
                 send(clientSocket, "1", 1, 0);
                 recv(clientSocket, tempbuff, 1, 0);
-                printf("to send = %s", to_send);
+                //printf("to send = %s", to_send);
                 send(clientSocket, to_send, strlen(to_send), 0);
                 recv(clientSocket, tempbuff, 1, 0);
-                printf("SUCCESS\n");
+               printf("SUCCESS\n");
                 //printf("file = %s\n", data.file);
                 //printf("hash = %s\n", data.hash_of_hash);
                 //printf("port_ip = %s\n", data.ip_port);
 
             }
             else
-                printf("not executed\n");
+                printf("FILE NOT FOUND\n");
             bzero(buffer, sizeof(buffer));
         }
 
 
         if (strcmp(command_to, "get") == 0) {
-            print("inside get of peer client");
+            if(command.size() != 3) {
+                print("INVALID ARGUMENTS\n");
+                continue;
+            }
+            //print("inside get of peer client");
             char *hash = (char*) malloc(40 * sizeof(char));
-            printf("path to save = %s\n", save_location);
+            //printf("path to save = %s\n", save_location);
             FILE* fp = fopen(torrent_location, "r");
-            if(fp == NULL)
-                print("error opening file in client peer");
+            if(fp == NULL) {
+                print("MTORRENT_FILE_NOT_FOUND");
+                continue;
+        }
             char c;
             int line_count = 0;
             int i = 0;
@@ -416,45 +442,45 @@ int main(int argc, char* argv[]){
                 }
             }
             hash[i] = '\0';
-            printf("hash = %s\n", hash);
-            print("sending to tracker 1 for get");
+            //printf("hash = %s\n", hash);
+            //print("sending to tracker 1 for get");
             send(clientSocket, "2", 1, 0);
             recv(clientSocket, tempbuff, 1, 0);
-            printf("sending hash to be found to tracker1");
+            //printf("sending hash to be found to tracker1");
             send(clientSocket, hash, strlen(hash), 0);
             recv(clientSocket, tempbuff, 1, 0);
             int total_found;
-            printf("getting hash on client\n");
+            //printf("getting hash on client\n");
             recv(clientSocket, &total_found, sizeof(total_found), 0);
             send(clientSocket, "1", 1, 0);
             int found = ntohl(total_found);
-            printf("%d found\n", found);
+            //printf("%d found\n", found);
             vector < pair <string, string> > found_files;
             bzero(buffer, BUFFER_SIZE);
             for(int i = 0; i < found; i++) {
                 recv(clientSocket, buffer, BUFFER_SIZE, 0); //get filename
                 send(clientSocket, "1", 1, 0);
-                printf("recieved filename = %s\n", buffer);
+                //printf("recieved filename = %s\n", buffer);
                 string file_path(buffer);
-                cout << "in string = " << file_path << "\n";
+               // cout << "in string = " << file_path << "\n";
                 bzero(buffer, BUFFER_SIZE);
                 recv(clientSocket, buffer, BUFFER_SIZE, 0); //get ip port to connect to
                 send(clientSocket, "1", 1, 0);
                 string ip_port(buffer);
-                printf("ip_port recieved = %s\n", buffer);
-                cout << "in string = " << ip_port << "\n";
+                //printf("ip_port recieved = %s\n", buffer);
+                //cout << "in string = " << ip_port << "\n";
                 bzero(buffer, BUFFER_SIZE);
                 found_files.push_back(make_pair(file_path, ip_port));
-            }
+            }/*
             for(int i = 0; i < found; i++) {
                 cout << "filepath = "<< found_files[i].first << " ip_port = " << found_files[i].second << "\n";
-            }
+            }*/
             if(found > 0) {
-                printf("inside found > 0\n");
+                //printf("inside found > 0\n");
                 //close(clientSocket);
                 //print("client socket closed\n");
                 string remote_file_path_str = found_files[0].first;
-                cout << "string file path = " << remote_file_path_str <<"\n";
+               // cout << "string file path = " << remote_file_path_str <<"\n";
                 char remote_file_path[remote_file_path_str.size() + 1];
                 strcpy(remote_file_path, remote_file_path_str.c_str());
 
@@ -466,8 +492,8 @@ int main(int argc, char* argv[]){
                 strcpy(ip_peer_connect, ip_peer_connect_str.c_str());
                 //strcpy(peer_upload_port, peer_upload_port_str.c_str());
                 int port_peer_connect = stoi(port_peer_connect_str);
-                cout << "ip = " << ip_peer_connect << " port = " << port_peer_connect << "\n";
-                print("mem cleared\n");
+                //cout << "ip = " << ip_peer_connect << " port = " << port_peer_connect << "\n";
+                //print("mem cleared\n");
 
                 int peersocket;
                 int opt = 1;
@@ -487,22 +513,22 @@ int main(int argc, char* argv[]){
                     exit(1);
                 }
                 printf("[+]Connected to download peer.\n");
-                printf("filepath = %s length = %d\n", remote_file_path, strlen(remote_file_path));
-                printf("filepath sending to client\n");
+                //printf("filepath = %s length = %d\n", remote_file_path, strlen(remote_file_path));
+                //printf("filepath sending to client\n");
                 send(peersocket, remote_file_path, sizeof(remote_file_path), 0);
                 recv(peersocket, tempbuff, 1, 0);
-                printf("filepath recieved to client\n");
+                //printf("filepath recieved to client\n");
                 bzero(buffer, BUFFER_SIZE);
                 int parts;
                 int residue;
-                printf("waiting for file parts and residue\n");
+                //printf("waiting for file parts and residue\n");
                 recv(peersocket, &parts, sizeof(parts), 0);
                 send(peersocket, "1", 1, 0);
-                printf("waiting for file parts and residue\n");
+                //printf("waiting for file parts and residue\n");
                 recv(peersocket, &residue, sizeof(residue), 0);
                 send(peersocket, "1", 1, 0);
-                cout << "parts = " << parts << " residue = " << residue<< "\n";
-                cout << "command2 = " << save_location << "\n";
+                //cout << "parts = " << parts << " residue = " << residue<< "\n";
+                //cout << "command2 = " << save_location << "\n";
                 FILE* wr = fopen(save_location, "ab");
                 if(wr == NULL) {
                     printf("cant open write file on peer\n");
@@ -520,10 +546,67 @@ int main(int argc, char* argv[]){
                 read(peersocket, bigbuffer, residue);
                 write(peersocket, "1", 1);
                 myfile.write(bigbuffer, residue);
-                cout << "recieving done\n";
+                cout << save_location <<"\n";
                 close(peersocket);
                 fclose(wr);
             }
+            else {
+                print("FILE NOT FOUND");
+            }
+
+        }
+
+        //remove
+        if(strcmp(command_to, "remove") == 0) {
+            print("in remove");
+            if(command.size() != 2) {
+                print("INVALID ARGUMENTS");
+                continue;
+            }
+
+            //sending 4 to indicate remove command
+            send(clientSocket, "4", 1, 0);
+            recv(clientSocket, tempbuff, 1, 0);
+
+            ifstream intorrent(torrent_location);
+
+            string line;
+            string filename, hash;
+            int itr = 1;
+            while(getline(intorrent, line)) {
+                if(itr == 3){
+                    filename = line;
+                    itr++;
+                }
+
+                else if(itr == 6){
+                    hash = line;
+                    itr++;
+                }
+                else {
+                    itr++;
+                }
+            }
+
+            intorrent.close();
+            send(clientSocket, filename.c_str(), filename.size(), 0);
+            recv(clientSocket, tempbuff, 1, 0);
+
+            send(clientSocket, hash.c_str(), 40, 0);
+            recv(clientSocket, tempbuff, 1, 0);
+
+            send(clientSocket, cl_ip_port, strlen(cl_ip_port), 0);
+            recv(clientSocket, tempbuff, 1, 0);
+
+            int success;
+
+            recv(clientSocket, &success, sizeof(success), 0);
+            send(clientSocket, "1", 1, 0);
+
+            if(success == 0)
+                printf("FILE_NOT_REMOVED");
+            else
+                print("FILE_REMOVED");
 
         }
 
@@ -536,6 +619,12 @@ int main(int argc, char* argv[]){
             //bzero(buffer, sizeof(buffer));
             exit(1);
         }
+
+
+
+
+
+
         bzero(buffer, sizeof(buffer));
 
     }

@@ -1,1 +1,0 @@
-/usr/bin/c++  -g   CMakeFiles/File_Sharing_System.dir/peer.cpp.o  -o File_Sharing_System 

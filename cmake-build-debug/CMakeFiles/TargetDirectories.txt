@@ -1,3 +1,0 @@
-/home/vivek/CLionProjects/File_Sharing_System/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/vivek/CLionProjects/File_Sharing_System/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/vivek/CLionProjects/File_Sharing_System/cmake-build-debug/CMakeFiles/File_Sharing_System.dir
